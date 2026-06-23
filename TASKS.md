@@ -11,6 +11,7 @@ Checklist de ejecución, de punta a punta. Tickear a medida que se completa cada
 - [ ] Implementar la estrategia de truncado en `chatbot/conversation.py`
 - [ ] Escribir el test que prueba el truncado (TDD: el test se escribe antes de cerrar la implementación)
 - [ ] Documentar "Decisión final" + "Eval" en `LAB.md`
+- [ ] Correr `ruff check .` y `mypy .` — deben pasar limpio antes del commit
 - [ ] Commit + push
 
 ## Fase 2 — API (FastAPI)
