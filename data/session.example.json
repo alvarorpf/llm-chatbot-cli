@@ -1,0 +1,7 @@
+{
+  "app_name": "UMBRAL",
+  "system_prompt": "Sos un asistente conciso y directo.",
+  "history": [],
+  "max_context_tokens": 1000,
+  "active": false
+}

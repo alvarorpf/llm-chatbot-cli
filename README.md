@@ -1,48 +1,154 @@
-# llm-chatbot-cli
+# llm-chatbot-cli · UMBRAL
 
-Chatbot CLI con memoria de contexto manejada a mano — sin frameworks de orquestación.
+**UMBRAL** — *Donde la memoria encuentra su límite.*
 
-Parte de la Capa 1 (LLM crudo) del roadmap de transición a AI Solutions Architect. Usa Groq (tier gratuito) vía cliente compatible con la API de OpenAI.
+Chatbot educativo que muestra en vivo cómo funciona la **ventana de contexto** de un LLM: qué se envía al modelo, qué se descarta cuando los tokens se agotan, y por qué la IA “olvida” el inicio de una charla larga.
 
-## Setup
+Proyecto de **Capa 1** (LLM crudo, sin frameworks de orquestación) del roadmap [AI Architect](../ai_architect/).
+
+| Stack | Uso |
+|-------|-----|
+| Python 3.10.12 | Lógica de truncado |
+| Groq (Llama 3.1) | Modelo vía API compatible OpenAI |
+| FastAPI | Backend HTTP |
+| React + Vite | Interfaz 3 columnas |
+| JSON (`data/session.json`) | Estado de sesión (sin base de datos) |
+
+---
+
+## Qué hace UMBRAL
+
+1. **Pantalla de inicio** — elegís cuántos tokens de contexto querés usar y presionás **Inicio**.
+2. **Chat** — conversás con el modelo como en cualquier chatbot.
+3. **Tres columnas en paralelo:**
+   - **Conversación** — todo lo que pasó en la charla.
+   - **Enviados a Groq** — lo que realmente recibe el modelo en cada turno.
+   - **Descartados** — mensajes viejos que ya no entran por el límite de tokens.
+4. **Finalizar** — modal con explicación general de tokens y vuelta al inicio.
+
+La lógica central está en `chatbot/conversation.py`: truncado **FIFO por presupuesto** antes de cada llamada a la API.
+
+---
+
+## Documentación en este repo
+
+| Archivo | Contenido |
+|---------|-----------|
+| `LAB.md` | Bitácora: hipótesis, fallos, decisión, evals |
+| `TASKS.md` | Checklist de ejecución |
+
+**Guías y post LinkedIn:** [ai_architect/projects/llm-chatbot-cli](../ai_architect/projects/llm-chatbot-cli/)
+
+---
+
+## Requisitos
+
+- Python **3.10.12**
+- Node.js 18+ (solo para la UI)
+- Cuenta [Groq](https://console.groq.com) con API key
+
+---
+
+## Instalación
 
 ```bash
-python -m venv .venv
+git clone <tu-repo>/llm-chatbot-cli.git
+cd llm-chatbot-cli
+
+python3.10 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-cp .env.example .env  # completar GROQ_API_KEY
+
+cp .env.example .env
+# Editar .env y completar GROQ_API_KEY=
+
+cp data/session.example.json data/session.json   # opcional, se crea al usar la API
 ```
 
-## Correr
+---
+
+## Uso — CLI (terminal)
 
 ```bash
+source .venv/bin/activate
 python -m chatbot.main
 ```
 
-## Tests
+Modo debug (métricas de truncado en consola):
 
 ```bash
-pytest
+CHATBOT_DEBUG=1 python -m chatbot.main
 ```
 
-Ver `LAB.md` para la bitácora de hipótesis, fallas y decisiones de este proyecto.
+---
 
-Ver `TASKS.md` para el checklist de ejecución paso a paso, desde el estado actual hasta el resultado final (CLI → API → React).
+## Uso — UMBRAL UI (recomendado)
 
-## Próximo paso: interfaz visual (FastAPI + React)
+**Terminal 1 — API:**
 
-Una vez terminado el truncado de contexto en `chatbot/conversation.py` (la lógica no se toca para esto), se suma una cara visual:
+```bash
+source .venv/bin/activate
+uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+**Terminal 2 — Frontend:**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Abrir **http://localhost:5173**
+
+---
+
+## API
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/state` | Estado actual (inicio o chat activo) |
+| `POST` | `/api/start` | `{ "max_tokens": 1000 }` — inicia charla |
+| `POST` | `/api/chat` | `{ "message": "..." }` — envía mensaje |
+| `POST` | `/api/finish` | Finaliza y vuelve a pantalla de inicio |
+
+Docs interactivas: http://localhost:8000/docs
+
+---
+
+## Estructura del proyecto
 
 ```
 llm-chatbot-cli/
-├── chatbot/              (sin cambios)
+├── chatbot/
+│   ├── conversation.py   # Memoria + truncado FIFO
+│   ├── client.py         # Cliente Groq
+│   └── main.py           # CLI
 ├── api/
-│   └── main.py           (FastAPI: POST /chat usando el mismo ConversationManager)
-└── frontend/
-    └── (Vite + React: input + lista de mensajes)
+│   ├── main.py           # FastAPI
+│   └── storage.py        # Persistencia JSON
+├── frontend/             # React — UMBRAL UI
+├── tests/
+├── data/session.json     # Sesión activa (gitignored)
+├── LAB.md
+└── TASKS.md
 ```
 
-* **Por qué FastAPI ahora y no antes**: React no puede llamar directo al código Python — hace falta un backend HTTP en el medio. Antes era innecesario (era solo un CLI); ahora el requisito real lo justifica (YAGNI en los dos sentidos).
-* **React, no OWL**: este proyecto es standalone (regla de la Sección 3 de `ai_architect`).
-* **Orden**: primero la lógica de truncado terminada y documentada en `LAB.md`, después la API, después el frontend — para no rehacer la integración si la lógica cambia.
-* **Gotcha esperado**: backend y frontend van a correr en puertos distintos en desarrollo — va a hacer falta configurar CORS en FastAPI.
+---
+
+## Tests y calidad
+
+```bash
+source .venv/bin/activate
+pytest -v
+ruff check .
+mypy .
+```
+
+CI: GitHub Actions en `.github/workflows/ci.yml`
+
+---
+
+## Licencia
+
+Ver `LICENSE`.

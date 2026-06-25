@@ -1,36 +1,21 @@
 # TASKS.md — llm-chatbot-cli
 
-Checklist de ejecución, de punta a punta. Tickear a medida que se completa cada paso — no saltear fases.
+## Fase 1 — Núcleo CLI ✅
 
-## Fase 1 — Núcleo CLI (Capa 1: el ejercicio real)
+- [x] Hipótesis, Intento 1, Decisión final, Eval en `LAB.md`
+- [x] Truncado FIFO en `conversation.py` + tests
+- [x] Documentación de referencia en `ai_architect/projects/llm-chatbot-cli/`
 
-- [ ] Completar "Hipótesis inicial" en `LAB.md`
-- [ ] Configurar entorno (venv, dependencias, `.env` con `GROQ_API_KEY`)
-- [ ] Correr el CLI y forzar una conversación larga para ver `get_context()` crecer sin límite
-- [ ] Documentar "Intento 1 (fallido)" en `LAB.md` con el comportamiento real observado
-- [ ] Implementar la estrategia de truncado en `chatbot/conversation.py`
-- [ ] Escribir el test que prueba el truncado (TDD: el test se escribe antes de cerrar la implementación)
-- [ ] Documentar "Decisión final" + "Eval" en `LAB.md`
-- [ ] Correr `ruff check .` y `mypy .` — deben pasar limpio antes del commit
+## Fase 2 — API + UI (UMBRAL) ✅
+
+- [x] FastAPI + `data/session.json`
+- [x] Endpoints: `/api/state`, `/api/start`, `/api/chat`, `/api/finish`
+- [x] React: pantalla inicio, 3 columnas, modal tokens, focus en input
+- [x] README completo
+- [x] Borrador post LinkedIn en `ai_architect/.../linkedin-post.md`
 - [ ] Commit + push
 
-## Fase 2 — API (FastAPI)
+## Fase 3 — Visibilidad
 
-- [ ] Agregar `fastapi` + `uvicorn` a las dependencias
-- [ ] Crear `api/main.py` con un endpoint `POST /chat` que reutiliza el `ConversationManager` existente
-- [ ] Configurar CORS para el origen del frontend
-- [ ] Probar el endpoint con `curl`/`httpie` ANTES de tocar el frontend
-- [ ] Commit + push
-
-## Fase 3 — Frontend (React)
-
-- [ ] Scaffolding de Vite + React en `frontend/`
-- [ ] UI mínima: input + lista de mensajes, llamando a `POST /chat`
-- [ ] Probar end-to-end: React → FastAPI → Groq → respuesta visible en pantalla
-- [ ] Commit + push
-
-## Fase 4 — Cierre
-
-- [ ] Actualizar `README.md` con instrucciones para correr API + frontend juntos
-- [ ] Marcar la tarea correspondiente como completada en el tracking del roadmap (`ai_architect`)
-- [ ] Post de LinkedIn explicando la decisión técnica del truncado (Sección 10 del roadmap)
+- [ ] Publicar post LinkedIn (personalizar link + screenshot)
+- [ ] Link en repo índice del portfolio

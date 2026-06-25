@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import logging
+import os
+from typing import Any, cast
 
 from dotenv import load_dotenv
 
@@ -30,9 +32,11 @@ def run() -> None:
             continue
 
         conversation.add_user_message(user_input)
+        if os.getenv("CHATBOT_DEBUG"):
+            conversation.print_context_debug()
         response = client.chat.completions.create(
             model=MODEL,
-            messages=conversation.get_context(),
+            messages=cast(Any, conversation.get_context()),
         )
         reply = response.choices[0].message.content
         if reply is None:
@@ -40,6 +44,8 @@ def run() -> None:
             continue
 
         conversation.add_assistant_message(reply)
+        if os.getenv("CHATBOT_DEBUG"):
+            conversation.print_context_debug()
         print(reply)
 
 
