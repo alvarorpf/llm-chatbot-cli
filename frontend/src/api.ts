@@ -23,16 +23,22 @@ export interface ChatState {
   stats: ContextStats;
 }
 
+const API_BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+
+async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
+  return fetch(`${API_BASE}${path}`, init);
+}
+
 /** Pide el estado actual al backend. */
 export async function fetchState(): Promise<ChatState> {
-  const response = await fetch("/api/state");
+  const response = await apiFetch("/api/state");
   if (!response.ok) throw new Error("No se pudo cargar el estado");
   return response.json();
 }
 
 /** Inicia una charla con el límite de tokens elegido. */
 export async function startSession(maxTokens: number): Promise<ChatState> {
-  const response = await fetch("/api/start", {
+  const response = await apiFetch("/api/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ max_tokens: maxTokens }),
@@ -43,14 +49,14 @@ export async function startSession(maxTokens: number): Promise<ChatState> {
 
 /** Finaliza la charla y vuelve a la pantalla de inicio. */
 export async function finishSession(): Promise<ChatState> {
-  const response = await fetch("/api/finish", { method: "POST" });
+  const response = await apiFetch("/api/finish", { method: "POST" });
   if (!response.ok) throw new Error("No se pudo finalizar");
   return response.json();
 }
 
 /** Envía un mensaje del usuario. */
 export async function sendMessage(message: string): Promise<ChatState> {
-  const response = await fetch("/api/chat", {
+  const response = await apiFetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message }),
