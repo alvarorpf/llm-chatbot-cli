@@ -9,8 +9,6 @@ Chatbot que visualiza en vivo cómo un LLM recibe y pierde contexto cuando se ag
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-green)]()
 [![React](https://img.shields.io/badge/React-UI-61dafb)]()
 
-**Documentación, LAB y bitácora:** [ai_architect/projects/llm-chatbot-cli](https://github.com/alvarorpf/ai-architect/tree/main/projects/llm-chatbot-cli)
-
 ---
 
 ## Inicio rápido
