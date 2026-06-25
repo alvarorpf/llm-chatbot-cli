@@ -19,17 +19,40 @@ load_dotenv()
 MODEL = "llama-3.1-8b-instant"
 
 _default_origins = "http://localhost:5173,http://127.0.0.1:5173"
-_allowed_origins = [
-    origin.strip()
-    for origin in os.environ.get("ALLOWED_ORIGINS", _default_origins).split(",")
-    if origin.strip()
-]
+_vercel_origin_regex = r"https://.*\.vercel\.app"
+
+
+def _cors_origins() -> list[str]:
+    """Orígenes explícitos: ALLOWED_ORIGINS + FRONTEND_URL (coma-separados o uno solo)."""
+    origins: set[str] = set()
+    for key in ("ALLOWED_ORIGINS", "FRONTEND_URL"):
+        raw = os.environ.get(key, "")
+        if not raw and key == "ALLOWED_ORIGINS":
+            raw = _default_origins
+        for part in raw.split(","):
+            origin = part.strip().rstrip("/")
+            if origin:
+                origins.add(origin)
+    return sorted(origins)
+
+
+def _cors_origin_regex() -> str | None:
+    """Permite previews y prod en vercel.app; desactivar con CORS_ALLOW_VERCEL=0."""
+    if os.environ.get("CORS_ALLOW_VERCEL", "1").strip().lower() in {"0", "false", "no"}:
+        return None
+    custom = os.environ.get("CORS_ORIGIN_REGEX", "").strip()
+    return custom or _vercel_origin_regex
+
+
+_allowed_origins = _cors_origins()
+_allowed_origin_regex = _cors_origin_regex()
 
 app = FastAPI(title=APP_NAME)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
+    allow_origin_regex=_allowed_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

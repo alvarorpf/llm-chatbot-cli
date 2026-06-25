@@ -98,7 +98,8 @@ Arquitectura recomendada:
    - **Python version:** 3.10
 4. Variables de entorno:
    - `GROQ_API_KEY` — tu clave de Groq
-   - `ALLOWED_ORIGINS` — URL de Vercel (ej. `https://umbral.vercel.app`)
+   - `FRONTEND_URL` — (opcional) URL de Vercel, ej. `https://llm-chatbot-cli.vercel.app`
+   - Por defecto se permiten orígenes `*.vercel.app` (`CORS_ALLOW_VERCEL=1`). Local: `ALLOWED_ORIGINS` incluye `localhost:5173`.
 5. Deploy. Copiá la URL pública del servicio.
 
 > En el plan free, Render “duerme” tras inactividad (~50 s al despertar). La sesión JSON se reinicia en cada redeploy.
@@ -117,9 +118,8 @@ Arquitectura recomendada:
 
 ### 3. Cerrar el círculo
 
-1. Volvé a Render y actualizá `ALLOWED_ORIGINS` con la URL real de Vercel.
-2. En Vercel, **Redeploy** si cambiaste `VITE_API_URL`.
-3. Abrí la URL de Vercel y probá una charla.
+1. Render redeploya solo tras el push (o **Manual Deploy** si hace falta).
+2. Abrí la URL de Vercel y probá una charla.
 
 La clave `GROQ_API_KEY` vive **solo en Render** — nunca en el frontend.
 
