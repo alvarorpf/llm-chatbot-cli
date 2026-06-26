@@ -29,10 +29,10 @@ export default function Header({
       </div>
       <div className="header__stats">
         <span>
-          tokens <strong>{stats.tokens_sent}</strong> / {stats.max_tokens}
+          📊 <span className="stat-label">tokens </span><strong>{stats.tokens_sent}</strong> / {stats.max_tokens}
         </span>
         <span>
-          descartados <strong>{stats.dropped_messages}</strong>
+          🗑️ <span className="stat-label">descartados </span><strong>{stats.dropped_messages}</strong>
         </span>
         <button
           type="button"
@@ -48,8 +48,9 @@ export default function Header({
           className="btn btn--ghost"
           onClick={onFinish}
           disabled={loading}
+          aria-label="Finalizar"
         >
-          Finalizar
+          ⏹ <span className="btn__label">Finalizar</span>
         </button>
       </div>
     </header>

@@ -266,12 +266,15 @@
 
   .panel__body {
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden;
     padding: 0 1rem 1rem;
+    max-height: 1000px;
+    transition: max-height 300ms ease;
   }
 
   .panel--collapsed .panel__body {
-    display: none;
+    max-height: 0 !important;
+    padding-bottom: 0;
   }
 
   /* —— Message list —— */
@@ -588,7 +591,7 @@
     }
 
     .panel--collapsed .panel__body {
-      display: block;
+      max-height: none;
     }
 
     .welcome {
@@ -609,6 +612,45 @@
     .app {
       padding: 2rem;
       padding: 2rem env(safe-area-inset-right, 2rem) 2rem env(safe-area-inset-left, 2rem);
+    }
+  }
+
+  /* ≤ 479px — mobile: stack header, compact stats, tighter panels */
+  @media (max-width: 479px) {
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+
+    .header__stats {
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .stat-label {
+      display: none;
+    }
+
+    .btn__label {
+      display: none;
+    }
+
+    .panel {
+      min-height: 200px;
+      border-radius: 12px;
+    }
+
+    .panel__header {
+      padding: 1rem 0.75rem 0.5rem;
+    }
+
+    .panel__body {
+      padding: 0 0.75rem 0.75rem;
+    }
+
+    .panel__hint {
+      display: none;
     }
   }
 }

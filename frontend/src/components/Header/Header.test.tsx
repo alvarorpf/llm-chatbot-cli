@@ -19,6 +19,17 @@ describe("Header", () => {
     expect(screen.getByText(/500/)).toBeInTheDocument();
     expect(screen.getByText(/2000/)).toBeInTheDocument();
     expect(screen.getByText(/3/)).toBeInTheDocument();
+    expect(screen.getByText(/tokens/)).toBeInTheDocument();
+    expect(screen.getByText(/descartados/)).toBeInTheDocument();
+  });
+
+  it("renders stat-label spans for responsive hiding", () => {
+    render(<Header {...defaultProps} />);
+
+    const statLabels = document.querySelectorAll(".stat-label");
+    expect(statLabels.length).toBe(2);
+    expect(statLabels[0]).toHaveTextContent(/tokens/);
+    expect(statLabels[1]).toHaveTextContent(/descartados/);
   });
 
   it("fires the theme toggle callback when the theme button is clicked", () => {
@@ -33,7 +44,9 @@ describe("Header", () => {
     const onFinish = vi.fn();
     render(<Header {...defaultProps} onFinish={onFinish} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /finalizar/i }));
+    const btn = screen.getByRole("button", { name: /finalizar/i });
+    expect(btn).toHaveAttribute("aria-label", "Finalizar");
+    fireEvent.click(btn);
     expect(onFinish).toHaveBeenCalledOnce();
   });
 
