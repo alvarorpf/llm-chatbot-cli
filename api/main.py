@@ -124,6 +124,12 @@ def _welcome_response() -> dict[str, Any]:
     }
 
 
+@app.get("/health")
+def health() -> dict[str, str]:
+    """Health check para Render y monitoreo."""
+    return {"status": "ok"}
+
+
 @app.get("/api/state")
 def get_state() -> dict[str, Any]:
     """Devuelve el estado actual; si no hay sesión activa, muestra la pantalla de inicio."""
@@ -165,7 +171,11 @@ def post_chat(body: ChatRequest) -> dict[str, Any]:
     manager = _manager_from_session()
     manager.add_user_message(text)
 
-    client = build_client()
+    try:
+        client = build_client()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
     response = client.chat.completions.create(
         model=MODEL,
         messages=cast(Any, manager.get_context()),
